@@ -1,90 +1,12 @@
-let ballx = 300;
-let bally = 300;
-let ballSize = 40;
-let score = 0;
-let gameState = "L1"; // Starting game state at Level 1
-
-function setup() {
-  createCanvas(600, 600);
-  textAlign(CENTER);
-  textSize(20);
-}
-
-function draw() {
-  background(220);
-  
-  // Display the score at the top
-  text("Score: " + score, width / 2, 40);
-
-  // Manage game state to determine the current level
-  if (gameState == "L1") {
-    levelOne();
-  } 
-  else if (gameState == "L2") {
-    levelTwo();
-  } 
-  else if (gameState == "L3") {
-    levelThree();
-  }
-}
-
-// Level 1: Basic gameplay, advance to Level 2 at score > 5
-function levelOne() {
-  text("Level 1", width / 2, height - 20);
-  let distToBall = dist(ballx, bally, mouseX, mouseY);
-  
-  if (distToBall < ballSize / 2) {
-    ballx = random(width);
-    bally = random(height);
-    score += 1;
-  }
-  
-  if (score > 5) {
-    gameState = "L2"; // Move to Level 2
-  }
-
-  // Draw ball and line to cursor
-  ellipse(ballx, bally, ballSize, ballSize);
-  line(ballx, bally, mouseX, mouseY);
-}
-
-// Level 2: Background color change, advance to Level 3 at score > 10
-function levelTwo() {
-  background(200, 100, 0); // Different background color for Level 2
-  text("Level 2", width / 2, height - 20);
-  let distToBall = dist(ballx, bally, mouseX, mouseY);
-  
-  if (distToBall < ballSize / 2) {
-    ballx = random(width);
-    bally = random(height);
-    score += 1;
-  }
-  
-  if (score > 10) {
-    gameState = "L3"; // Move to Level 3
-  }
-
-  ellipse(ballx, bally, ballSize, ballSize);
-}
-
-// Level 3: Background color change, ball size decreases with each click, level completion at score > 15
-function levelThree() {
-  background(200, 100, 200); // Different background color for Level 3
-  text("Level 3", width / 2, height - 20);
-  let distToBall = dist(ballx, bally, mouseX, mouseY);
-  
-  if (distToBall < ballSize / 2) {
-    ballx = random(width);
-    bally = random(height);
-    ballSize = max(10, ballSize - 1); // Decrease ball size, but don't go below 10
-    score += 1;
-  }
-  
-  if (score > 15) {
-    // Level complete message (can add additional levels if desired)
-    text("Congratulations! You completed Level 3!", width / 2, height / 2);
-    noLoop(); // Stop the game
-  }
-
-  ellipse(ballx, bally, ballSize, ballSize);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P5.js Game</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+  <script src="sketch.js"></script>
+</body>
+</html>
