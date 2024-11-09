@@ -1,111 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>p5.js Catch Game</title>
-    <!-- Include the p5.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-</head>
-<body>
-    <script>
-        // Game code starts here
+let ballx = 300;
+let bally = 300;
+let ballSize = 40;
+let score = 0;
+let gameState = "L1"; // Starting game state at Level 1
 
-        let paddle;
-        let fallingObjects = [];
-        let score = 0;
+function setup() {
+  createCanvas(600, 600);
+  textAlign(CENTER);
+  textSize(20);
+}
 
-        function setup() {
-            createCanvas(400, 600);
-            paddle = new Paddle();
-        }
+function draw() {
+  background(220);
+  
+  // Display the score at the top
+  text("Score: " + score, width / 2, 40);
 
-        function draw() {
-            background(220);
-            
-            // Show and move the paddle
-            paddle.show();
-            paddle.move();
-            
-            // Generate new falling objects occasionally
-            if (frameCount % 30 === 0) {
-                fallingObjects.push(new FallingObject());
-            }
-            
-            // Show and move falling objects, check for catching
-            for (let i = fallingObjects.length - 1; i >= 0; i--) {
-                fallingObjects[i].show();
-                fallingObjects[i].fall();
-                
-                // Check if the paddle catches the object
-                if (fallingObjects[i].hits(paddle)) {
-                    score++;
-                    fallingObjects.splice(i, 1); // Remove the caught object
-                } else if (fallingObjects[i].offScreen()) {
-                    fallingObjects.splice(i, 1); // Remove objects off screen
-                }
-            }
-            
-            // Display score
-            fill(0);
-            textSize(24);
-            text(`Score: ${score}`, 10, 30);
-        }
+  // Manage game state to determine the current level
+  if (gameState == "L1") {
+    levelOne();
+  } 
+  else if (gameState == "L2") {
+    levelTwo();
+  } 
+  else if (gameState == "L3") {
+    levelThree();
+  }
+}
 
-        // Paddle class
-        class Paddle {
-            constructor() {
-                this.w = 80;
-                this.h = 20;
-                this.x = width / 2 - this.w / 2;
-                this.y = height - this.h - 10;
-                this.speed = 5;
-            }
-            
-            show() {
-                fill(50);
-                rect(this.x, this.y, this.w, this.h);
-            }
-            
-            move() {
-                if (keyIsDown(LEFT_ARROW) && this.x > 0) {
-                    this.x -= this.speed;
-                } else if (keyIsDown(RIGHT_ARROW) && this.x + this.w < width) {
-                    this.x += this.speed;
-                }
-            }
-        }
+// Level 1: Basic gameplay, advance to Level 2 at score > 5
+function levelOne() {
+  text("Level 1", width / 2, height - 20);
+  let distToBall = dist(ballx, bally, mouseX, mouseY);
+  
+  if (distToBall < ballSize / 2) {
+    ballx = random(width);
+    bally = random(height);
+    score += 1;
+  }
+  
+  if (score > 5) {
+    gameState = "L2"; // Move to Level 2
+  }
 
-        // FallingObject class
-        class FallingObject {
-            constructor() {
-                this.size = 20;
-                this.x = random(width - this.size);
-                this.y = 0;
-                this.speed = random(2, 5);
-            }
-            
-            show() {
-                fill(255, 0, 0);
-                ellipse(this.x, this.y, this.size);
-            }
-            
-            fall() {
-                this.y += this.speed;
-            }
-            
-            hits(paddle) {
-                return (this.y + this.size / 2 > paddle.y &&
-                        this.x > paddle.x &&
-                        this.x < paddle.x + paddle.w);
-            }
-            
-            offScreen() {
-                return this.y > height;
-            }
-        }
+  // Draw ball and line to cursor
+  ellipse(ballx, bally, ballSize, ballSize);
+  line(ballx, bally, mouseX, mouseY);
+}
 
-        // Game code ends here
-    </script>
-</body>
-</html>
+// Level 2: Background color change, advance to Level 3 at score > 10
+function levelTwo() {
+  background(200, 100, 0); // Different background color for Level 2
+  text("Level 2", width / 2, height - 20);
+  let distToBall = dist(ballx, bally, mouseX, mouseY);
+  
+  if (distToBall < ballSize / 2) {
+    ballx = random(width);
+    bally = random(height);
+    score += 1;
+  }
+  
+  if (score > 10) {
+    gameState = "L3"; // Move to Level 3
+  }
+
+  ellipse(ballx, bally, ballSize, ballSize);
+}
+
+// Level 3: Background color change, ball size decreases with each click, level completion at score > 15
+function levelThree() {
+  background(200, 100, 200); // Different background color for Level 3
+  text("Level 3", width / 2, height - 20);
+  let distToBall = dist(ballx, bally, mouseX, mouseY);
+  
+  if (distToBall < ballSize / 2) {
+    ballx = random(width);
+    bally = random(height);
+    ballSize = max(10, ballSize - 1); // Decrease ball size, but don't go below 10
+    score += 1;
+  }
+  
+  if (score > 15) {
+    // Level complete message (can add additional levels if desired)
+    text("Congratulations! You completed Level 3!", width / 2, height / 2);
+    noLoop(); // Stop the game
+  }
+
+  ellipse(ballx, bally, ballSize, ballSize);
+}
