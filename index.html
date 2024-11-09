@@ -1,12 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>P5.js Game</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>p5.js Catch Game</title>
+    <!-- Include the p5.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 </head>
 <body>
-  <script src="sketch.js"></script>
+    <script>
+        // Game code starts here
+
+        let paddle;
+        let fallingObjects = [];
+        let score = 0;
+
+        function setup() {
+            createCanvas(400, 600);
+            paddle = new Paddle();
+        }
+
+        function draw() {
+            background(220);
+            
+            // Show and move the paddle
+            paddle.show();
+            paddle.move();
+            
+            // Generate new falling objects occasionally
+            if (frameCount % 30 === 0) {
+                fallingObjects.push(new FallingObject());
+            }
+            
+            // Show and move falling objects, check for catching
+            for (let i = fallingObjects.length - 1; i >= 0; i--) {
+                fallingObjects[i].show();
+                fallingObjects[i].fall();
+                
+                // Check if the paddle catches the object
+                if (fallingObjects[i].hits(paddle)) {
+                    score++;
+                    fallingObjects.splice(i, 1); // Remove the caught object
+                } else if (fallingObjects[i].offScreen()) {
+                    fallingObjects.splice(i, 1); // Remove objects off screen
+                }
+            }
+            
+            // Display score
+            fill(0);
+            textSize(24);
+            text(`Score: ${score}`, 10, 30);
+        }
+
+        // Paddle class
+        class Paddle {
+            constructor() {
+                this.w = 80;
+                this.h = 20;
+                this.x = width / 2 - this.w / 2;
+                this.y = height - this.h - 10;
+                this.speed = 5;
+            }
+            
+            show() {
+                fill(50);
+                rect(this.x, this.y, this.w, this.h);
+            }
+            
+            move() {
+                if (keyIsDown(LEFT_ARROW) && this.x > 0) {
+                    this.x -= this.speed;
+                } else if (keyIsDown(RIGHT_ARROW) && this.x + this.w < width) {
+                    this.x += this.speed;
+                }
+            }
+        }
+
+        // FallingObject class
+        class FallingObject {
+            constructor() {
+                this.size = 20;
+                this.x = random(width - this.size);
+                this.y = 0;
+                this.speed = random(2, 5);
+            }
+            
+            show() {
+                fill(255, 0, 0);
+                ellipse(this.x, this.y, this.size);
+            }
+            
+            fall() {
+                this.y += this.speed;
+            }
+            
+            hits(paddle) {
+                return (this.y + this.size / 2 > paddle.y &&
+                        this.x > paddle.x &&
+                        this.x < paddle.x + paddle.w);
+            }
+            
+            offScreen() {
+                return this.y > height;
+            }
+        }
+
+        // Game code ends here
+    </script>
 </body>
 </html>
