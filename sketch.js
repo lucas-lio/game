@@ -80,4 +80,30 @@ function levelThree() {
   fill(0);
   text("Level 3", width / 2, height - 20);
   
-  let distToBall = dist(ballx, bally,
+  let distToBall = dist(ballx, bally, mouseX, mouseY);
+  if (distToBall < ballSize / 2 && mouseIsPressed) {
+    ballx = random(ballSize, width - ballSize);
+    bally = random(ballSize, height - ballSize);
+    ballSize = max(10, ballSize - 1); // Decrease ball size, but don't go below 10
+    score += 1;
+  }
+  
+  if (score > 15) {
+    text("Congratulations! You completed Level 3!", width / 2, height / 2);
+    highScore = max(highScore, score); // Update high score if current score is higher
+    noLoop(); // Stop the game
+  }
+
+  fill(255, 0, 0);
+  ellipse(ballx, bally, ballSize, ballSize);
+}
+
+// Restart the game if "r" is pressed
+function keyPressed() {
+  if (key === 'r' || key === 'R') {
+    score = 0;
+    ballSize = 40;
+    gameState = "L1";
+    loop(); // Restart the game
+  }
+}
